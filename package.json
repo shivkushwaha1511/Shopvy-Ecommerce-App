@@ -1,0 +1,29 @@
+{
+  "name": "shopvy",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Shopvy is amazon cloned app",
+  "main": "app.js",
+  "scripts": {
+    "start": "node backend/app.js",
+    "dev": "set NODE_ENV=DEVELOPMENT& nodemon backend/app.js",
+    "prod": "set NODE_ENV=PRODUCTION& nodemon backend/app.js",
+    "seeder": "node backend/seeder/seeder.js"
+  },
+  "author": "Shiv Kushwaha",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.4.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0",
+    "nodemailer": "^6.9.13",
+    "stripe": "^16.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
