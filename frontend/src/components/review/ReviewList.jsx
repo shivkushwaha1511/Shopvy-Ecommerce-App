@@ -5,9 +5,9 @@ const ReviewList = ({ reviews }) => {
   return (
     <div class="reviews w-75">
       <h3>Other's Reviews:</h3>
+      <hr />
       {reviews?.map((review) => (
         <>
-          <hr />
           <div class="review-card my-3">
             <div class="row">
               <div class="col-1">
@@ -33,9 +33,9 @@ const ReviewList = ({ reviews }) => {
               </div>
             </div>
           </div>
-          <hr />
         </>
       ))}
+      <hr />
     </div>
   );
 };

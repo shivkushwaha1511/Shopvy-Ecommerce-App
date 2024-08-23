@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const orderApi = createApi({
   reducerPath: "orderApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
+  tagTypes: ["Orders", "OrderDetail", "AdminOrders"],
   endpoints: (builder) => ({
     placeNewOrder: builder.mutation({
       query(body) {
@@ -12,12 +13,19 @@ export const orderApi = createApi({
           body,
         };
       },
+      invalidatesTags: ["Orders"],
     }),
     getMyOrders: builder.query({
       query: () => "/orders",
+      providesTags: ["Orders"],
     }),
     getOrderDetail: builder.query({
       query: (id) => `/orders/${id}`,
+      providesTags: ["OrderDetail"],
+    }),
+    getOrderSales: builder.query({
+      query: ({ startDate, endDate }) =>
+        `/admin/sales/?startDate=${startDate}&endDate=${endDate}`,
     }),
     createStripeSession: builder.mutation({
       query(body) {
@@ -28,6 +36,29 @@ export const orderApi = createApi({
         };
       },
     }),
+    getAdminOrders: builder.query({
+      query: () => "/admin/orders",
+      providesTags: ["AdminOrders"],
+    }),
+    updateOrder: builder.mutation({
+      query({ id, body }) {
+        return {
+          url: `/admin/orders/${id}`,
+          method: "PUT",
+          body,
+        };
+      },
+      invalidatesTags: ["OrderDetail", "AdminOrders"],
+    }),
+    deleteOrder: builder.mutation({
+      query(id) {
+        return {
+          url: `/admin/orders/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["AdminOrders"],
+    }),
   }),
 });
 
@@ -36,4 +67,8 @@ export const {
   useCreateStripeSessionMutation,
   useGetMyOrdersQuery,
   useGetOrderDetailQuery,
+  useLazyGetOrderSalesQuery,
+  useGetAdminOrdersQuery,
+  useUpdateOrderMutation,
+  useDeleteOrderMutation,
 } = orderApi;

@@ -117,36 +117,34 @@ const OrderDetail = () => {
 
         <h3 className="mt-5 my-4">Order Items:</h3>
 
+        <hr />
         {orderItems.map((item) => (
-          <>
-            <hr />
-            <div className="cart-item my-1">
-              <div className="row my-5">
-                <div className="col-4 col-lg-2">
-                  <img
-                    src={item?.image}
-                    alt={item?.name}
-                    height="45"
-                    width="65"
-                  />
-                </div>
+          <div className="cart-item my-1">
+            <div className="row my-5">
+              <div className="col-4 col-lg-2">
+                <img
+                  src={item?.image}
+                  alt={item?.name}
+                  height="45"
+                  width="65"
+                />
+              </div>
 
-                <div className="col-5 col-lg-5">
-                  <Link to={`../product/${item.product}`}>{item?.name}</Link>
-                </div>
+              <div className="col-5 col-lg-5">
+                <Link to={`../product/${item.product}`}>{item?.name}</Link>
+              </div>
 
-                <div className="col-4 col-lg-2 mt-4 mt-lg-0">
-                  <p>{item?.price}</p>
-                </div>
+              <div className="col-4 col-lg-2 mt-4 mt-lg-0">
+                <p>{item?.price}</p>
+              </div>
 
-                <div className="col-4 col-lg-3 mt-4 mt-lg-0">
-                  <p>{item?.quantity} Piece(s)</p>
-                </div>
+              <div className="col-4 col-lg-3 mt-4 mt-lg-0">
+                <p>{item?.quantity} Piece(s)</p>
               </div>
             </div>
-            <hr />
-          </>
+          </div>
         ))}
+        <hr />
       </div>
     </div>
   );

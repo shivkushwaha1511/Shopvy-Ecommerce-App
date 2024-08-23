@@ -32,36 +32,28 @@ const ConfirmOrder = () => {
           <hr />
           <h4 className="mt-4">Your Cart Items:</h4>
 
+          <hr />
           {cartItems.map((item) => (
-            <>
-              <hr />
-              <div className="cart-item my-1">
-                <div className="row">
-                  <div className="col-4 col-lg-2">
-                    <img
-                      src={item?.image}
-                      alt="Laptop"
-                      height="45"
-                      width="65"
-                    />
-                  </div>
+            <div className="cart-item my-1">
+              <div className="row">
+                <div className="col-4 col-lg-2">
+                  <img src={item?.image} alt="Laptop" height="45" width="65" />
+                </div>
 
-                  <div className="col-5 col-lg-6">
-                    <Link to={item?.url}>{item?.name}</Link>
-                  </div>
+                <div className="col-5 col-lg-6">
+                  <Link to={item?.url}>{item?.name}</Link>
+                </div>
 
-                  <div className="col-4 col-lg-4 mt-4 mt-lg-0">
-                    <p>
-                      {item?.quantity} x &#8377;{item?.price} ={" "}
-                      <b>&#8377;{item?.quantity * item?.price}</b>
-                    </p>
-                  </div>
+                <div className="col-4 col-lg-4 mt-4 mt-lg-0">
+                  <p>
+                    {item?.quantity} x &#8377;{item?.price} ={" "}
+                    <b>&#8377;{item?.quantity * item?.price}</b>
+                  </p>
                 </div>
               </div>
-
-              <hr />
-            </>
+            </div>
           ))}
+          <hr />
         </div>
 
         <div className="col-12 col-lg-3 my-4">

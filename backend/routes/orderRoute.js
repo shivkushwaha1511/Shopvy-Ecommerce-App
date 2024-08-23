@@ -5,6 +5,7 @@ import {
   getAllOrders,
   getMyOrders,
   getOrderDetail,
+  getSales,
   updateOrder,
 } from "../controllers/orderController.js";
 import { isAuthenticated, authenticateUserRole } from "../middleware/auth.js";
@@ -18,5 +19,6 @@ router.route("/orders/:id").get(isAuthenticated, getOrderDetail);
 router.route("/admin/orders").get(isAuthenticated, getAllOrders);
 router.route("/admin/orders/:id").put(isAuthenticated, updateOrder);
 router.route("/admin/orders/:id").delete(isAuthenticated, deleteOrder);
+router.route("/admin/sales").get(isAuthenticated, getSales);
 
 export default router;

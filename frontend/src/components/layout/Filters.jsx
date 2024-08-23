@@ -107,7 +107,7 @@ const Filters = () => {
             }}
             defaultChecked={defaultCheckHandler("category", category)}
           />
-          <label className="form-check-label" for="check4">
+          <label className="form-check-label" htmlFor="check4">
             {category}
           </label>
         </div>
@@ -129,7 +129,7 @@ const Filters = () => {
             }}
             defaultChecked={defaultCheckHandler("ratings", rating.toString())}
           />
-          <label className="form-check-label" for="check7">
+          <label className="form-check-label" htmlFor="check7">
             <StarRatings
               rating={rating}
               starRatedColor="#ffb829"

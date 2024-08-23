@@ -3,6 +3,7 @@ import Order from "../models/orderModel.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import APIFilters from "../utils/apiFilters.js";
+import { deleteFile, uploadFile } from "../utils/cloudinary.js";
 
 // Get all products -> "/api/product"
 export const getProducts = catchAsyncError(async (req, res, next) => {
@@ -51,6 +52,19 @@ export const getProductDetail = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// Get Admin all products-> "/api/admin/product"
+export const getAdminProducts = catchAsyncError(async (req, res, next) => {
+  const products = await Product.find();
+
+  if (!products) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
+
+  res.status(200).json({
+    products,
+  });
+});
+
 // Update product -> "/api/product/:id"
 export const updateProductDetail = catchAsyncError(async (req, res) => {
   let product = await Product.findById(req.params.id);
@@ -68,7 +82,7 @@ export const updateProductDetail = catchAsyncError(async (req, res) => {
   });
 });
 
-// Delete product -> "/api/product/:id"
+// Delete product -> "/api/admin/products/:id"
 export const deleteProduct = catchAsyncError(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
@@ -76,7 +90,11 @@ export const deleteProduct = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Product not found", 404));
   }
 
-  await Product.findByIdAndDelete(req.params.id, req.body);
+  product?.images.forEach((img) => {
+    deleteFile(img?.public_id);
+  });
+
+  await product.deleteOne();
 
   res.status(200).json({
     message: "Product deleted",
@@ -129,7 +147,7 @@ export const createReview = catchAsyncError(async (req, res, next) => {
 
 // Get all reviews of product -> "/api/product/reviews"
 export const getAllReviews = catchAsyncError(async (req, res, next) => {
-  const product = await Product.findById(req.query.id);
+  const product = await Product.findById(req.query.id).populate("reviews.user");
 
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
@@ -142,14 +160,14 @@ export const getAllReviews = catchAsyncError(async (req, res, next) => {
 
 // Delete review of product -> "/api/admin/product/reviews"
 export const deleteReview = catchAsyncError(async (req, res, next) => {
-  const product = await Product.findById(req.query.id);
+  const product = await Product.findById(req.query.productId);
 
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
   }
 
   const reviews = product.reviews.filter(
-    (review) => review.user.toString() !== req.user._id.toString()
+    (review) => review._id.toString() !== req?.query?.id.toString()
   );
 
   const numOfReviews = reviews.length;
@@ -180,4 +198,56 @@ export const canReview = catchAsyncError(async (req, res, next) => {
   }
 
   res.status(200).json({ canReview: true });
+});
+
+// Upload Product Immages -> /products/:id/upload_images
+export const uploadImages = catchAsyncError(async (req, res, next) => {
+  try {
+    const product = await Product.findById(req?.params?.id);
+
+    if (!product) {
+      return next(new ErrorHandler("Product not found", 404));
+    }
+
+    const urls = await Promise.all(
+      req?.body?.images?.map((img) => uploadFile(img, "shopvy/products"))
+    );
+
+    product?.images.push(...urls);
+    await product?.save({ validateBeforeSave: false });
+
+    res.status(201).json({
+      product,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// Upload Product Immages -> admin/products/:id/delte_image
+export const deleteImage = catchAsyncError(async (req, res, next) => {
+  try {
+    const product = await Product.findById(req?.params?.id);
+
+    if (!product) {
+      return next(new ErrorHandler("Product not found", 404));
+    }
+
+    const isDeleted = await deleteFile(req?.body?.imgId);
+
+    if (isDeleted) {
+      product.images = product?.images?.filter(
+        (img) => img.public_id !== req.body.imgId
+      );
+      await product?.save({ validateBeforeSave: false });
+    }
+
+    res.status(201).json({
+      product,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 });

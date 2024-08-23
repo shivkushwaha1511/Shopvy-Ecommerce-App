@@ -3,12 +3,14 @@ import SearchBar from "./SearchBar";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useLazyLogoutQuery } from "../../redux/api/authApi";
+import { useGetUserQuery } from "../../redux/api/userApi";
 
 const Header = () => {
   const [logout] = useLazyLogoutQuery();
 
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { isLoading } = useGetUserQuery();
 
   const { cartItems } = useSelector((state) => state.cart);
 
@@ -87,9 +89,11 @@ const Header = () => {
             </div>
           </div>
         ) : (
-          <Link to="/login" className="btn ms-4" id="login_btn">
-            Login
-          </Link>
+          !isLoading && (
+            <Link to="/login" className="btn ms-4" id="login_btn">
+              Login
+            </Link>
+          )
         )}
       </div>
     </nav>

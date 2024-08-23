@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCartItems } from "../../redux/features/cartSlice";
 import NewReview from "../review/NewReview";
 import ReviewList from "../review/ReviewList";
+import NotFound from "../layout/NotFound";
 
 const ProductDetails = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -37,6 +38,10 @@ const ProductDetails = () => {
   }, [isError, product]);
 
   if (isLoading) return <Loader />;
+
+  if (error && error?.status === 404) {
+    return <NotFound />;
+  }
 
   const handleInc = () => {
     let qty = document.querySelector(".count").valueAsNumber;

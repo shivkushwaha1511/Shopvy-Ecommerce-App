@@ -115,3 +115,86 @@ export const deleteOrder = catchAsyncError(async (req, res, next) => {
     success: true,
   });
 });
+
+const getSalesData = async (startDate, endDate) => {
+  const salesData = await Order.aggregate([
+    {
+      // Stage 1 - Filter results
+      $match: {
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      },
+    },
+    {
+      // Stage 2 - Group Data
+      $group: {
+        _id: {
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        },
+        totalSales: { $sum: "$totalAmount" },
+        numOrders: { $sum: 1 }, // count the number of orders
+      },
+    },
+  ]);
+
+  let totalSales = 0;
+  let totalOrders = 0;
+
+  const salesMap = new Map();
+
+  salesData.forEach((sale) => {
+    salesMap.set(sale._id.date, {
+      sales: sale.totalSales,
+      numOrders: sale.numOrders,
+    });
+    totalSales += sale.totalSales;
+    totalOrders += sale.numOrders;
+  });
+
+  const dates = getDatesBetween(startDate, endDate);
+
+  const finalSalesData = dates.map((date) => {
+    return {
+      date,
+      sales: (salesMap.get(date) || { sales: 0 }).sales,
+      numOrders: (salesMap.get(date) || { numOrders: 0 }).numOrders,
+    };
+  });
+
+  return { salesData: finalSalesData, totalSales, totalOrders };
+};
+
+const getDatesBetween = (startDate, endDate) => {
+  const currentDate = new Date(startDate);
+  const dates = [];
+
+  while (currentDate <= new Date(endDate)) {
+    dates.push(currentDate.toISOString().split("T")[0]);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return dates;
+};
+
+export const getSales = catchAsyncError(async (req, res, next) => {
+  try {
+    const startDate = new Date(req.query.startDate);
+    const endDate = new Date(req.query.endDate);
+
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    const { salesData, totalSales, totalOrders } = await getSalesData(
+      startDate,
+      endDate
+    );
+
+    return res.status(200).json({ salesData, totalSales, totalOrders });
+  } catch (error) {
+    console.log(error);
+
+    next(error);
+  }
+});

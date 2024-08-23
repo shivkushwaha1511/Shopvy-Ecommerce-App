@@ -41,7 +41,7 @@ const Register = () => {
           <h2 className="mb-4">Register</h2>
 
           <div className="mb-3">
-            <label for="name_field" className="form-label">
+            <label htmlFor="name_field" className="form-label">
               Name
             </label>
             <input
@@ -57,7 +57,7 @@ const Register = () => {
           </div>
 
           <div className="mb-3">
-            <label for="email_field" className="form-label">
+            <label htmlFor="email_field" className="form-label">
               Email
             </label>
             <input
@@ -73,7 +73,7 @@ const Register = () => {
           </div>
 
           <div className="mb-3">
-            <label for="password_field" className="form-label">
+            <label htmlFor="password_field" className="form-label">
               Password
             </label>
             <input

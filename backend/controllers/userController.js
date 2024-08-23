@@ -215,6 +215,10 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found", 404));
   }
 
+  if (user?.avatar?.public_id) {
+    await deleteFile(user?.avatar?.public_id);
+  }
+
   await user.deleteOne();
 
   return res.status(201).json({
@@ -226,7 +230,7 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 export const uploadAvatar = catchAsyncError(async (req, res, next) => {
   const avatarResponse = await uploadFile(req?.body?.avatar, "shopvy/avatars");
 
-  if (req?.user?.avatar?.url) {
+  if (req?.user?.avatar?.public_id) {
     await deleteFile(req?.user?.avatar?.public_id);
   }
 
